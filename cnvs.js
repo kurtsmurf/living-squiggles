@@ -31,7 +31,7 @@ const setPrevFrameGuide = (val = `url(${frames[frames.length - 1]})`) => {
 
 const handleAddFrame = (e) => {
     if (e.key === 'Enter') {
-        const url = canvas.toDataURL()
+        const url = canvas.toDataURL('images/jpg')
         frames.push(url)
         c.clearRect(0, 0, window.innerWidth, window.innerHeight)
         setPrevFrameGuide()
