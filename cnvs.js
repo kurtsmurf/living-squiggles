@@ -7,11 +7,11 @@ c.lineWidth = 3
 
 let lastEvent
 
-canvas.addEventListener('mousedown', function(e) {
+const handleMouseDown = (e) => {
     lastEvent = e
-})
+}
 
-canvas.addEventListener('mousemove', function(e) {
+const handleMouseMove = (e, lastEvent) => {
     if (e.buttons) {
         c.beginPath()
         c.moveTo(lastEvent.clientX, lastEvent.clientY)
@@ -21,24 +21,24 @@ canvas.addEventListener('mousemove', function(e) {
 
         lastEvent = e
     }
-})
+}
+
+canvas.addEventListener('mousedown', handleMouseDown)
+canvas.addEventListener('mousemove', (e) => handleMouseMove(e, lastEvent))
 
 const frames = []
 
-const setPrevFrameGuide = (val = `url(${frames[frames.length - 1]})`) => {
+const setPrevFrameGuide = () => {
+    val = `url(${frames[frames.length - 1]})`
     document.body.style.backgroundImage = val
 }
 
-const handleAddFrame = (e) => {
-    if (e.key === 'Enter') {
-        const url = canvas.toDataURL('images/jpg')
-        frames.push(url)
-        c.clearRect(0, 0, window.innerWidth, window.innerHeight)
-        setPrevFrameGuide()
-    }
+const addFrame = () => {
+    const url = canvas.toDataURL('images/jpg')
+    frames.push(url)
+    c.clearRect(0, 0, window.innerWidth, window.innerHeight)
+    setPrevFrameGuide()
 }
-
-window.addEventListener('keypress', handleAddFrame)
 
 let isAnimating = false
 let wait = 100
@@ -52,11 +52,11 @@ const animate = (index) => {
 }
 
 const enableDrawing = () => {
-// todo
+    canvas.addEventListener('mousedown', handleMouseDown)
 }
 
 const disableDrawing = () => {
-// todo
+    canvas.removeEventListener('mousedown', handleMouseDown)
 }
 
 const startAnimation = () => {
@@ -74,13 +74,17 @@ const stopAnimation = () => {
     isAnimating = false
 }
 
-const handleToggleAnimation = (e) => {
-    if (e.key === '\\') {
-        if (isAnimating) {
-            stopAnimation()
-        } else {
-            startAnimation()
-        }
+const toggleAnimation = () => {
+    if (isAnimating) {
+        stopAnimation()
+    } else {
+        startAnimation()
     }
 }
-window.addEventListener('keypress', handleToggleAnimation )
+
+function handleKeyPress(e) {
+    if (e.key === 'Enter') addFrame()
+    else if (e.key === '\\') toggleAnimation()
+}
+
+window.addEventListener('keypress', handleKeyPress)
